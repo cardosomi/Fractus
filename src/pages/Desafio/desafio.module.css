@@ -12,8 +12,8 @@ body {
     background-color: #f5f5f5;
 }
 
-.card-desafio {
-    width: 600px;
+.cardDesafio {
+    width: min(600px, calc(100% - 32px));
 
     background: white;
 
@@ -58,8 +58,11 @@ h1 {
 .alternativas button:hover {
     transform: scale(1.03);
 }
-.card-desafio button {
+.cardDesafio button {
     margin-top: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 
     padding: 12px 25px;
 
@@ -75,6 +78,30 @@ h1 {
     cursor: pointer;
 }
 
-.card-desafio button:hover {
+.cardDesafio button:hover {
     opacity: 0.9;
+}
+
+.passosIntroducao {
+    margin: 20px 0;
+    padding-left: 24px;
+    text-align: left;
+}
+
+.passosIntroducao li {
+    margin-bottom: 10px;
+}
+
+.linkVideo {
+    display: block;
+    margin: 8px 0 4px;
+    color: #b8860b;
+    font-weight: bold;
+}
+
+.videos {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 8px 0;
 }

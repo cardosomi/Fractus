@@ -5,7 +5,7 @@ function Fases(){
 
     const fases = [
         {id:1, desbloqueada:true},
-        {id:2, desbloqueada:false},
+        {id:2, desbloqueada:localStorage.getItem('fase1Concluida') === 'true'},
         {id:3, desbloqueada:false},
         {id:4, desbloqueada:false},
         {id:5, desbloqueada:false},

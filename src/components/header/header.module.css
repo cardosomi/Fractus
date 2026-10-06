@@ -9,6 +9,10 @@
   padding: 20px;
 }
 
+.header h1 {
+  color: #ffd700;
+}
+
 nav {
   display: flex;
   gap: 20px;

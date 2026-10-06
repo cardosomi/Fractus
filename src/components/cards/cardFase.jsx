@@ -6,7 +6,7 @@ function CardFase({ fase, desbloqueada }) {
 
   function abrirFase() {
     if (desbloqueada) {
-      navigate('/desafio');
+      navigate(`/desafio?fase=${fase}`);
     }
   }
 

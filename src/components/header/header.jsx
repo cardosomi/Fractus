@@ -12,9 +12,6 @@ function Header() {
         <Link to="/recompensas">Recompensas</Link>
       </nav>
 
-      <div className={styles.status}>
-        ⭐ 1200 | 🏆 Nível 5 | 💎 300
-      </div>
     </header>
   );
 }
