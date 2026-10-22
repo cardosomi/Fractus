@@ -4,7 +4,7 @@ const fases = {
     {
       id: 1,
       nome: "Conhecendo as Frações",
-      conteudo: "Aprender o numerador e o denominador.",
+      conteudo: "Aprender o numerador e o denominador.Uma fração é formada por dois números: o numerador e o denominador. O numerador fica na parte de cima e indica quantas partes do inteiro estamos considerando. Já o denominador fica na parte de baixo e indica em quantas partes iguais o inteiro foi dividido. Por exemplo, na fração \(\frac{3}{4}\), o número 3 é o numerador, pois representa as três partes consideradas, e o número 4 é o denominador, pois indica que o inteiro foi dividido em quatro partes iguais.",
       questoes: [
         {
           pergunta: "Em 1/2, qual é o numerador?",

@@ -3,7 +3,7 @@ const configuracaoJogo = {
   Facil: {
     1: {
       pergaminhos: [500, 1100, 1800],
-      quantidadeQuestoes: 3,
+      quantidadeQuestoes: 4,
       conquista: "Aprendiz das Frações",
       recompensa: 10
     },

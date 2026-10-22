@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/header/header';
 
@@ -41,31 +41,36 @@ const questoes = [
   }
 ];
 
+function descobrirNivel(pontos) {
+  if (pontos <= 2) return 'Iniciante';
+  if (pontos <= 4) return 'Intermediário';
+  return 'Avançado';
+}
+
 function Nivelamento() {
   const navigate = useNavigate();
   const [questaoAtual, setQuestaoAtual] = useState(0);
   const [pontuacao, setPontuacao] = useState(0);
+
   const finalizado = questaoAtual >= questoes.length;
-
-  const nivel =
-    pontuacao <= 2
-      ? 'Iniciante'
-      : pontuacao <= 4
-        ? 'Intermediário'
-        : 'Avançado';
-
-  useEffect(() => {
-    if (finalizado) {
-      localStorage.setItem('nivelAluno', nivel);
-    }
-  }, [finalizado, nivel]);
+  const nivel = descobrirNivel(pontuacao);
 
   function responder(indiceEscolhido) {
-    if (indiceEscolhido === questoes[questaoAtual].correta) {
-      setPontuacao(pontuacao + 1);
+    const acertou =
+      indiceEscolhido === questoes[questaoAtual].correta;
+
+    const novaPontuacao = pontuacao + (acertou ? 1 : 0);
+    const proximaQuestao = questaoAtual + 1;
+
+    setPontuacao(novaPontuacao);
+
+    if (proximaQuestao === questoes.length) {
+      const nivelFinal = descobrirNivel(novaPontuacao);
+
+      localStorage.setItem('nivelAluno', nivelFinal);
     }
 
-    setQuestaoAtual(questaoAtual + 1);
+    setQuestaoAtual(proximaQuestao);
   }
 
   if (finalizado) {
@@ -77,7 +82,10 @@ function Nivelamento() {
           <div className="nivelamento-card">
             <h1>Nivelamento concluído!</h1>
             <h2>Seu nível é: {nivel}</h2>
-            <p>Você acertou {pontuacao} de {questoes.length} questões.</p>
+
+            <p>
+              Você acertou {pontuacao} de {questoes.length} questões.
+            </p>
 
             <button
               className="botao-iniciar"
@@ -100,10 +108,16 @@ function Nivelamento() {
       <main className="nivelamento">
         <div className="nivelamento-card">
           <h1>Teste de nivelamento</h1>
+
           <p>
-            Responda às questões para descobrirmos o seu nível de aprendizado em frações.
+            Responda às questões para descobrirmos
+            seu nível de aprendizado em frações.
           </p>
-          <h1>Questão {questaoAtual + 1} de {questoes.length}</h1>
+
+          <h2>
+            Questão {questaoAtual + 1} de {questoes.length}
+          </h2>
+
           <h2>{questao.pergunta}</h2>
 
           <div className="nivelamento-alternativas">
