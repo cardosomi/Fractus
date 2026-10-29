@@ -1,13 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Press+Start+2P&display=swap");
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+:root {
+  font-family: "Fredoka", "Trebuchet MS", sans-serif;
+  color: #fff;
+  background: #171a40;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --gold: #ffd65a;
+  --night: #171a40;
+  --panel: #242650;
+  --panel-border: #44457b;
+  --purple: #7954dc;
+  --lavender: #c6b6ff;
+  --cream: #fff6d9;
+  --ink: #2c2453;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background: #eef3f7;
-  color: #17202a;
+  min-height: 100vh;
+  font-family: "Fredoka", "Trebuchet MS", sans-serif;
+  background: radial-gradient(ellipse at top, #32356d 0, #171a40 58%, #10122b 100%);
+  color: white;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
 }
 
 .boas-vindas {
@@ -513,3 +541,351 @@ body {
 
 .mascote-pata-esquerda { left: 12px; }
 .mascote-pata-direita { right: 12px; }
+
+/* Shared game-inspired interface */
+.boas-vindas,
+.nivelamento,
+.recompensas,
+.inventario {
+  min-height: calc(100vh - 84px);
+  color: white;
+}
+
+.home-painel {
+  padding-top: 30px;
+}
+
+.home-hero {
+  position: relative;
+  min-height: 320px;
+  border: 3px solid var(--panel-border);
+  border-radius: 17px;
+  background: var(--panel);
+  box-shadow: 0 9px 0 #10122b;
+}
+
+.home-kicker,
+.card-label {
+  color: var(--gold);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+}
+
+.home-copy h1 {
+  color: var(--gold);
+  text-shadow: 3px 4px 0 #473b82;
+}
+
+.home-motivacao,
+.nome-jogador {
+  color: #d7d4ff;
+}
+
+.nome-jogador input {
+  border: 2px solid #414374;
+  border-radius: 9px;
+  background: #171936;
+}
+
+.nome-jogador input:focus {
+  outline-color: var(--gold);
+}
+
+.botao-iniciar,
+.nivelamento-alternativas button {
+  border: 0;
+  border-radius: 10px;
+  color: #4a2e77;
+  background: #ffbf3f;
+  box-shadow: 0 5px 0 #d78b24;
+  font-weight: 700;
+  transition: transform 0.12s, filter 0.12s;
+}
+
+.botao-iniciar:hover,
+.nivelamento-alternativas button:hover {
+  background: #ffbf3f;
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+.progresso-card,
+.jornada-card,
+.atalhos,
+.inventario-card {
+  border: 3px solid var(--panel-border);
+  border-radius: 15px;
+  background: var(--panel);
+  box-shadow: 0 6px 0 #10122b;
+  color: white;
+}
+
+.card-heading h2,
+.atalhos h2 {
+  color: var(--cream);
+}
+
+.card-heading strong,
+.jornada-destino {
+  color: var(--gold);
+}
+
+.barra-progresso {
+  border: 2px solid #414374;
+  background: #171936;
+}
+
+.barra-progresso span {
+  background: var(--gold);
+}
+
+.progresso-legenda,
+.mapa-etapa {
+  color: #c8c7f0;
+}
+
+.mapa-linha {
+  background: #6868a2;
+}
+
+.mapa-etapa span {
+  border-color: #6868a2;
+  background: #171936;
+  color: white;
+}
+
+.mapa-etapa-concluida span,
+.mapa-etapa-atual span {
+  border-color: var(--gold);
+  background: #ffbf3f;
+  color: var(--ink);
+}
+
+.atalhos-botoes button {
+  border: 2px solid #414374;
+  border-radius: 9px;
+  background: #171936;
+  color: white;
+  transition: transform 0.12s, border-color 0.12s;
+}
+
+.atalhos-botoes button:hover {
+  border-color: var(--gold);
+  background: #343665;
+  transform: translateY(-2px);
+}
+
+.nivelamento-card,
+.medalha {
+  width: min(600px, calc(100% - 32px));
+  padding: 32px;
+  border: 4px solid white;
+  border-radius: 20px;
+  outline: 4px solid #5c48b6;
+  background: var(--cream);
+  box-shadow: 0 10px 0 rgba(16, 18, 43, 0.7);
+  color: var(--ink);
+}
+
+.nivelamento-card h1,
+.recompensas > h1,
+.inventario-card h1 {
+  color: #704ce1;
+  text-shadow: 2px 3px 0 #d6c8ff;
+}
+
+.nivelamento-card h2 {
+  margin-top: 16px;
+  color: #3c326e;
+}
+
+.nivelamento-card p {
+  margin-top: 10px;
+  color: #625b7e;
+  line-height: 1.5;
+}
+
+.nivelamento-alternativas button {
+  border: 2px solid #d5c8f5;
+  box-shadow: 0 4px 0 #d78b24;
+}
+
+.recompensas {
+  gap: 20px;
+}
+
+.medalha {
+  width: auto;
+  min-width: min(320px, calc(100% - 32px));
+  border-color: white;
+  text-align: center;
+}
+
+.medalha span {
+  color: #473674;
+}
+
+.medalha p {
+  color: #625b7e;
+}
+
+.sem-medalha {
+  padding: 20px 24px;
+  border: 2px solid var(--panel-border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: #c8c7f0;
+}
+
+.inventario-card {
+  width: min(500px, calc(100% - 32px));
+  padding: 42px 28px;
+}
+
+.inventario-card p {
+  margin-top: 10px;
+  color: #c8c7f0;
+}
+
+.mapa {
+  display: flex;
+  width: min(760px, calc(100% - 32px));
+  flex-direction: column;
+  gap: 16px;
+  margin: 42px auto;
+  padding: 24px;
+  border: 3px solid var(--panel-border);
+  border-radius: 17px;
+  background: rgba(36, 38, 80, 0.88);
+  box-shadow: 0 9px 0 #10122b;
+}
+
+.mapa-kicker {
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-align: center;
+}
+
+.mapa h1 {
+  color: var(--cream);
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(14px, 3vw, 22px);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.mapa-descricao {
+  margin-top: -14px;
+  color: #c8c7f0;
+  text-align: center;
+}
+
+.mapa-trilha {
+  position: relative;
+  width: 100%;
+  height: 840px;
+  overflow: hidden;
+  border: 4px solid #bf914d;
+  border-radius: 13px;
+  background-color: #e9c987;
+  background-image:
+    radial-gradient(ellipse at 18% 18%, rgba(255, 242, 195, 0.62), transparent 30%),
+    radial-gradient(ellipse at 82% 78%, rgba(198, 146, 70, 0.22), transparent 34%),
+    repeating-linear-gradient(165deg, transparent 0 48px, rgba(164, 119, 57, 0.08) 49px 51px, transparent 52px 90px);
+  box-shadow: inset 0 0 0 3px rgba(255, 239, 191, 0.58);
+}
+
+.mapa-trilha-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.trilha-sombra,
+.trilha-pontilhada {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.trilha-sombra {
+  stroke: #9c6c36;
+  stroke-width: 3.2;
+  opacity: 0.56;
+}
+
+.trilha-pontilhada {
+  stroke: #fff0bd;
+  stroke-width: 1.6;
+  stroke-dasharray: 0.15 2.2;
+}
+
+.mapa-piramide path {
+  fill: #bd8c48;
+  stroke: #9a6d39;
+  stroke-width: 0.8;
+}
+
+.mapa-piramide-distante {
+  opacity: 0.48;
+}
+
+.mapa-sol {
+  position: absolute;
+  top: 5%;
+  right: 12%;
+  width: 42px;
+  aspect-ratio: 1;
+  border: 3px solid #bd8c48;
+  border-radius: 50%;
+  background: #efb94f;
+  box-shadow: inset 0 0 0 4px #f6d891;
+}
+
+.mapa-parada {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  width: 96px;
+  height: 96px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+}
+
+.mapa-parada::before {
+  position: absolute;
+  inset: -7px;
+  border: 2px solid rgba(126, 84, 40, 0.48);
+  border-radius: 50%;
+  content: "";
+}
+
+.mapa-parada button {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 560px) {
+  .mapa-parada {
+    width: 78px;
+    height: 78px;
+  }
+}
+
+@media (max-width: 760px) {
+  .home-painel {
+    padding-top: 20px;
+  }
+
+  .home-hero {
+    border-radius: 14px;
+  }
+
+  .mapa {
+    gap: 16px;
+    margin: 24px auto;
+    padding: 18px 12px;
+  }
+}

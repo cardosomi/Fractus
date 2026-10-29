@@ -1,28 +1,72 @@
 .header {
-  background: #1e293b;
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  width: 100%;
+  background: #242650;
   color: white;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  padding: 20px;
+  gap: 20px;
+  padding: 12px max(20px, calc((100% - 1120px) / 2));
+  border-bottom: 3px solid #44457b;
+  box-shadow: 0 5px 0 rgba(16, 18, 43, 0.55);
 }
 
 .header h1 {
-  color: #ffd700;
+  color: #ffd65a;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(14px, 2vw, 20px);
+  letter-spacing: 1px;
+  text-shadow: 2px 3px 0 #473b82;
 }
 
-nav {
+.header nav {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
-nav a {
-  color: white;
+.header nav a {
+  padding: 9px 12px;
+  border: 2px solid transparent;
+  border-radius: 9px;
+  color: #d7d4ff;
   text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
+}
+
+.header nav a:hover,
+.header nav a:focus-visible {
+  border-color: #6868a2;
+  background: #171936;
+  color: #ffd65a;
+  outline: none;
 }
 
 .status {
   font-weight: bold;
+}
+
+@media (max-width: 560px) {
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+
+  .header nav {
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  .header nav a {
+    padding: 7px 9px;
+    font-size: 0.86rem;
+  }
 }

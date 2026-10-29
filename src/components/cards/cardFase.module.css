@@ -1,27 +1,42 @@
-.fase{
-    width: 120px;
-    height: 120px;
-
-    border-radius: 50%;
-
-    border: 5px solid black;
-
-    background-color: #FFD700;
-
-    font-size: 1.2rem;
-    font-weight: bold;
-
-    cursor: pointer;
-
-    transition: .3s;
+.fase {
+  width: 96px;
+  height: 96px;
+  border: 4px solid white;
+  border-radius: 50%;
+  outline: 4px solid #5c48b6;
+  background: #ffbf3f;
+  box-shadow: 0 7px 0 #c48b2b;
+  color: #4a2e77;
+  cursor: pointer;
+  font-size: 1.35rem;
+  font-weight: 700;
+  transition: transform 0.12s, filter 0.12s;
 }
 
-.fase:hover{
-    transform: scale(1.1);
+.fase:not(:disabled):hover {
+  filter: brightness(1.08);
+  transform: translateY(-3px) scale(1.04);
 }
 
-.bloqueada{
-    background-color: #555;
-    color: white;
-    cursor: not-allowed;
+.fase:focus-visible {
+  outline: 4px solid #ffd65a;
+  outline-offset: 5px;
+}
+
+.fase:disabled {
+  border-color: #77799f;
+  outline-color: #44457b;
+  background: #343665;
+  box-shadow: 0 7px 0 #10122b;
+  color: #c8c7f0;
+  cursor: not-allowed;
+  filter: saturate(0.55);
+}
+
+@media (max-width: 560px) {
+  .fase {
+    width: 78px;
+    height: 78px;
+    font-size: 1.1rem;
+  }
 }
