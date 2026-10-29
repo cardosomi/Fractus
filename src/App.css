@@ -822,28 +822,6 @@ input {
   stroke-dasharray: 0.15 2.2;
 }
 
-.mapa-piramide path {
-  fill: #bd8c48;
-  stroke: #9a6d39;
-  stroke-width: 0.8;
-}
-
-.mapa-piramide-distante {
-  opacity: 0.48;
-}
-
-.mapa-sol {
-  position: absolute;
-  top: 5%;
-  right: 12%;
-  width: 42px;
-  aspect-ratio: 1;
-  border: 3px solid #bd8c48;
-  border-radius: 50%;
-  background: #efb94f;
-  box-shadow: inset 0 0 0 4px #f6d891;
-}
-
 .mapa-parada {
   position: absolute;
   z-index: 1;

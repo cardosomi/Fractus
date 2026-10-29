@@ -38,10 +38,7 @@ function Home() {
           </div>
 
           <div className="mascote" aria-label="Faraó do Fractus">
-            <img
-              src="/farao-e-gato-dupla-encantadora-desenhada-a-mao_53876-1280593.avif"
-              alt="Faraó e gato do Fractus"
-            />
+            <img src="/../../../public/fotoHome/delta.png" alt="delta simbolo do FRACTUS" />
             <span className="mascote-simbolo">1/2</span>
           </div>
         </section>

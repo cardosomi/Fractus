@@ -50,16 +50,7 @@ function Fases() {
               className="trilha-pontilhada"
               d="M28 70 C28 142 72 138 72 210 C72 282 28 278 28 350 C28 422 72 418 72 490 C72 562 28 558 28 630 C28 702 72 698 72 770"
             />
-            <g className="mapa-piramide">
-              <path d="M7 220 16 202 25 220Z" />
-              <path d="M13 220 22 198 33 220Z" />
-            </g>
-            <g className="mapa-piramide mapa-piramide-distante">
-              <path d="M73 610 82 592 91 610Z" />
-              <path d="M80 610 88 594 97 610Z" />
-            </g>
           </svg>
-          <span className="mapa-sol" aria-hidden="true" />
           {fases.map((fase, index) => (
             <div
               key={fase.id}
