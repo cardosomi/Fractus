@@ -2,6 +2,7 @@
 // CONTROLES: setas ou A/D para mover; Espaço, W ou seta para cima para pular.
 // ESPAÇO DAS SPRITES: veja os comentários no final deste arquivo.
 
+async function initializeGame() {
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height;
@@ -14,23 +15,14 @@ const phaseNumber = Math.max(
   Math.min(6, Number(query.get('fase')) || 1)
 );
 
-const levelKey =
-  query.get('nivel') ||
-  localStorage.getItem('nivelJogo') ||
-  'Facil';
-
-let savedLevelData = [];
-
-try {
-  savedLevelData = JSON.parse(
-    localStorage.getItem('dadosNiveisJogo') || '[]'
-  );
-} catch {
-  savedLevelData = [];
+const gameDataResponse = await fetch('/api/game-data');
+const gameData = await gameDataResponse.json();
+if (!gameDataResponse.ok) {
+  throw new Error(gameData.error || 'Não foi possível carregar os dados do jogo.');
 }
 
-const phaseData = Array.isArray(savedLevelData)
-  ? savedLevelData.find(
+const phaseData = Array.isArray(gameData.phases)
+  ? gameData.phases.find(
       (item) => Number(item.id) === phaseNumber
     )
   : null;
@@ -576,7 +568,7 @@ function loseLife() {
 }
 
 
-function finishGame() {
+async function finishGame() {
   if (finished) return;
 
   finished = true;
@@ -586,42 +578,47 @@ function finishGame() {
     lessonCount === lessons.length;
 
   if (todasLicoesRespondidas) {
-    let progressoSalvo = true;
-
-    try {
-      localStorage.setItem(
-        `fase${phaseNumber}Concluida_${levelKey}`,
-        'true'
-      );
-
-      const scoreKey = `recordeFase${phaseNumber}_${levelKey}`;
-      const scoreAnterior = Number(localStorage.getItem(scoreKey)) || 0;
-      const moedasAnteriores = Number(localStorage.getItem('moedasTotais')) || 0;
-
-      localStorage.setItem(scoreKey, String(Math.max(scoreAnterior, score)));
-      localStorage.setItem('moedasTotais', String(moedasAnteriores + coins));
-    } catch (error) {
-      progressoSalvo = false;
-      console.error('Não foi possível salvar o progresso do jogo.', error);
-    }
-
-    $("endTitle").textContent = "TESOURO CONQUISTADO!";
-    $("endText").textContent =
-      `Parabéns! Você concluiu a fase ${phaseNumber} com ${score} pontos e ${coins} moedas.${progressoSalvo ? "" : " Atenção: não foi possível salvar seu progresso neste navegador."}`;
-
     const botao = $("endOverlay").querySelector("button");
+    const salvarProgresso = async () => {
+      try {
+        const response = await fetch('/api/complete-phase', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phase: phaseNumber, score, coins })
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || 'Não foi possível salvar seu progresso.');
+        }
 
-    if (botao) {
-      botao.textContent =
-        phaseNumber < 6 ? "Próxima fase ➜" : "Voltar às fases";
+        $("endTitle").textContent = "TESOURO CONQUISTADO!";
+        $("endText").textContent =
+          `Parabéns! Você concluiu a fase ${phaseNumber} com ${score} pontos e ${coins} moedas.`;
+        if (botao) {
+          botao.textContent =
+            phaseNumber < 6 ? "Próxima fase ➜" : "Voltar às fases";
+          botao.onclick = () => {
+            window.parent.location.href =
+              phaseNumber < 6
+                ? `/desafio?fase=${phaseNumber + 1}`
+                : "/fases";
+          };
+        }
+      } catch (error) {
+        console.error('Não foi possível salvar o progresso no servidor.', error);
+        $("endTitle").textContent = "ERRO AO SALVAR";
+        $("endText").textContent =
+          `A fase foi concluída, mas não conseguimos salvar seus dados: ${error.message}`;
+        if (botao) {
+          botao.textContent = "Tentar salvar novamente";
+          botao.onclick = salvarProgresso;
+        }
+      }
+    };
 
-      botao.onclick = () => {
-        window.parent.location.href =
-          phaseNumber < 6
-            ? `/desafio?fase=${phaseNumber + 1}`
-            : "/fases";
-      };
-    }
+    $("endTitle").textContent = "SALVANDO PROGRESSO...";
+    $("endText").textContent = "Enviando seus resultados para o servidor.";
+    await salvarProgresso();
   } else {
     $("endTitle").textContent = "AINDA FALTAM PERGAMINHOS!";
     $("endText").textContent =
@@ -703,7 +700,10 @@ window.addEventListener("keyup", (event) => {
 });
 
 $("playBtn").addEventListener("click", startGame);
-$("restartBtn").addEventListener("click", startGame);
+$("restartBtn").onclick = startGame;
+$("menuBtn").addEventListener("click", () => {
+  window.parent.location.href = "/fases";
+});
 $("soundBtn").addEventListener("click", () => {
   soundOn = !soundOn;
   $("soundBtn").textContent = soundOn ? "♫" : "♪";
@@ -711,3 +711,12 @@ $("soundBtn").addEventListener("click", () => {
 
 draw();
 loop();
+}
+
+initializeGame().catch((error) => {
+  console.error('Não foi possível iniciar o jogo.', error);
+  const intro = document.querySelector('#startOverlay .intro');
+  const playButton = document.getElementById('playBtn');
+  if (intro) intro.textContent = `Não foi possível carregar o jogo: ${error.message}`;
+  if (playButton) playButton.disabled = true;
+});

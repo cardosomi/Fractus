@@ -99,6 +99,15 @@ body {
   font-size: 20px;
 }
 
+.menu-button {
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.menu-button:hover {
+  background: #6658b4;
+}
+
 .game-frame {
   position: relative;
   overflow: hidden;

@@ -1,29 +1,30 @@
 
+import { useEffect, useState } from 'react';
 import CardFase from '../../components/cards/cardFase';
 import Header from '../../components/header/header';
+import { getProfile } from '../../api';
+import dadosFases from '../../data/dadosfases';
 
 function Fases() {
-  const nivelAluno =
-    localStorage.getItem('nivelAluno') || 'Iniciante';
+  const [profile, setProfile] = useState(null);
+  const [error, setError] = useState('');
 
-  const nomesDosNiveis = {
-    'Iniciante': 'Facil',
-    'Intermediário': 'Intermediario',
-    'Avançado': 'Avancado'
-  };
+  useEffect(() => {
+    getProfile().then(setProfile).catch((requestError) => {
+      setError(requestError.message);
+    });
+  }, []);
 
-  const nivel = nomesDosNiveis[nivelAluno] || 'Facil';
+  const nivel = profile?.level || 'Facil';
+  const fasesConcluidas = new Set(profile?.completedPhases || []);
 
   const fases = Array.from({ length: 6 }, (_, index) => {
     const id = index + 1;
 
     return {
       id,
-      desbloqueada:
-        id === 1 ||
-        localStorage.getItem(
-          `fase${id - 1}Concluida_${nivel}`
-        ) === 'true'
+      concluida: fasesConcluidas.has(id),
+      desbloqueada: Boolean(profile?.level) && (id === 1 || fasesConcluidas.has(id - 1))
     };
   });
 
@@ -35,6 +36,14 @@ function Fases() {
         <p className="mapa-kicker">SUA JORNADA</p>
         <h1>Mapa de fases</h1>
         <p className="mapa-descricao">Complete cada desafio para desbloquear o próximo.</p>
+        {error && <p role="alert">{error}</p>}
+        {!profile && !error && <p>Carregando seu progresso...</p>}
+        {profile && !profile.level && (
+          <p>
+            Faça o nivelamento antes de começar.{' '}
+            <a href="/nivelamento">Ir para o nivelamento</a>
+          </p>
+        )}
         <div className="mapa-trilha">
           <svg
             className="mapa-trilha-svg"
@@ -64,6 +73,8 @@ function Fases() {
                 fase={fase.id}
                 nivel={nivel}
                 desbloqueada={fase.desbloqueada}
+                concluida={fase.concluida}
+                phasesData={dadosFases[nivel] || dadosFases.Facil}
               />
             </div>
           ))}

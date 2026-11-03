@@ -1,21 +1,22 @@
+import { useEffect, useState } from 'react';
 import Header from '../../components/header/header';
 import { useNavigate } from 'react-router-dom';
+import { getProfile } from '../../api';
 
 function Home() {
   const navigate = useNavigate();
-  const nome = localStorage.getItem('nomeJogador') || '';
-  const nivelAluno = localStorage.getItem('nivelAluno');
-  const nivel = {
-    Iniciante: 'Facil',
-    'Intermediário': 'Intermediario',
-    'Avançado': 'Avancado'
-  }[nivelAluno];
-  const fasesConcluidas = nivel
-    ? Array.from({ length: 6 }, (_, index) => index + 1).filter(
-        (fase) =>
-          localStorage.getItem(`fase${fase}Concluida_${nivel}`) === 'true'
-      ).length
-    : 0;
+  const [profile, setProfile] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    getProfile().then(setProfile).catch((requestError) => {
+      setError(requestError.message);
+    });
+  }, []);
+
+  const nome = profile?.name || '';
+  const nivel = profile?.level;
+  const fasesConcluidas = profile?.completedPhases?.length || 0;
   const fase1Concluida = fasesConcluidas > 0;
   const progresso = (fasesConcluidas / 6) * 100;
   const faseAtual = fasesConcluidas === 6
@@ -33,6 +34,7 @@ function Home() {
       <Header />
 
       <main className="home-painel">
+        {error && <p role="alert">{error}</p>}
         <section className="home-hero">
           <div className="home-copy">
             <p className="home-kicker">Sua jornada de matemática</p>
@@ -44,6 +46,7 @@ function Home() {
             <button
               className="botao-iniciar"
               onClick={() => navigate(destino)}
+              disabled={!profile}
             >
               {textoBotao}
             </button>
@@ -80,7 +83,6 @@ function Home() {
                 <p className="card-label">Mapa da jornada</p>
                 <h2>Seu caminho</h2>
               </div>
-              <span className="jornada-destino">→</span>
             </div>
             <div className="mapa-mini">
               <span className="mapa-linha" />

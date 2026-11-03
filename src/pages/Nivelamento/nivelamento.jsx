@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/header/header';
+import { saveProfile } from '../../api';
 
 const questoes = [
   {
@@ -51,23 +52,41 @@ function Nivelamento() {
   const navigate = useNavigate();
   const [questaoAtual, setQuestaoAtual] = useState(0);
   const [pontuacao, setPontuacao] = useState(0);
+  const [salvando, setSalvando] = useState(false);
+  const [erroSalvar, setErroSalvar] = useState('');
 
   const finalizado = questaoAtual >= questoes.length;
   const nivel = descobrirNivel(pontuacao);
 
-  function responder(indiceEscolhido) {
+  async function responder(indiceEscolhido) {
     const acertou =
       indiceEscolhido === questoes[questaoAtual].correta;
 
     const novaPontuacao = pontuacao + (acertou ? 1 : 0);
     const proximaQuestao = questaoAtual + 1;
 
-    setPontuacao(novaPontuacao);
-
     if (proximaQuestao === questoes.length) {
       const nivelFinal = descobrirNivel(novaPontuacao);
+      const nivelJogo = {
+        Iniciante: 'Facil',
+        'Intermediário': 'Intermediario',
+        'Avançado': 'Avancado'
+      }[nivelFinal];
 
-      localStorage.setItem('nivelAluno', nivelFinal);
+      setSalvando(true);
+      setErroSalvar('');
+      try {
+        await saveProfile({ level: nivelJogo });
+      } catch (error) {
+        setErroSalvar(error.message);
+        return;
+      } finally {
+        setSalvando(false);
+      }
+
+      setPontuacao(novaPontuacao);
+    } else {
+      setPontuacao(novaPontuacao);
     }
 
     setQuestaoAtual(proximaQuestao);
@@ -87,9 +106,16 @@ function Nivelamento() {
               Você acertou {pontuacao} de {questoes.length} questões.
             </p>
 
+            {erroSalvar && (
+              <p role="alert">
+                Não foi possível salvar seu nível no servidor: {erroSalvar}.
+                Volte à última questão e tente responder novamente.
+              </p>
+            )}
             <button
               className="botao-iniciar"
               onClick={() => navigate('/fases')}
+              disabled={Boolean(erroSalvar)}
             >
               Ir para fases
             </button>
@@ -125,11 +151,18 @@ function Nivelamento() {
               <button
                 key={alternativa}
                 onClick={() => responder(indice)}
+                disabled={salvando}
               >
                 {alternativa}
               </button>
             ))}
           </div>
+          {erroSalvar && (
+            <p role="alert">
+              Não foi possível salvar seu nível: {erroSalvar}. Selecione uma resposta
+              novamente para tentar salvar.
+            </p>
+          )}
         </div>
       </main>
     </>

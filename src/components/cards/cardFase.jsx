@@ -1,35 +1,44 @@
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import dadosFases from '../../data/dadosfases';
+import { saveGameData } from '../../api';
 import styles from './cardFase.module.css';
 
-function CardFase({ fase, desbloqueada, nivel }) {
+function CardFase({ fase, desbloqueada, concluida, nivel, phasesData }) {
   const navigate = useNavigate();
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState('');
 
-  function abrirFase() {
-    if (!desbloqueada) return;
+  async function abrirFase() {
+    if (!desbloqueada || salvando) return;
 
-    // Salva o nível definido pelo nivelamento.
-    localStorage.setItem('nivelJogo', nivel);
-
-    // Entrega os dados das fases ao jogo.
-    localStorage.setItem(
-      'dadosNiveisJogo',
-      JSON.stringify(dadosFases[nivel] || dadosFases.Facil)
-    );
-
-    // Abre diretamente o jogo da fase clicada.
-    navigate(`/desafio?fase=${fase}`);
+    setSalvando(true);
+    setErro('');
+    try {
+      await saveGameData({
+        level: nivel,
+        phases: phasesData || dadosFases[nivel] || dadosFases.Facil
+      });
+      navigate(`/desafio?fase=${fase}`);
+    } catch (requestError) {
+      setErro(requestError.message);
+    } finally {
+      setSalvando(false);
+    }
   }
 
   return (
-    <button
-      className={styles.fase}
-      onClick={abrirFase}
-      disabled={!desbloqueada}
-    >
-      {desbloqueada ? '🔓' : '🔒'} {fase}
-    </button>
+    <div>
+      <button
+        className={styles.fase}
+        onClick={abrirFase}
+        disabled={!desbloqueada || salvando}
+      >
+        {desbloqueada ? (concluida ? '✅' : '🔓') : '🔒'} {fase}
+      </button>
+      {erro && <p role="alert">{erro}</p>}
+    </div>
   );
 }
 
