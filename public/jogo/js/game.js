@@ -586,14 +586,28 @@ function finishGame() {
     lessonCount === lessons.length;
 
   if (todasLicoesRespondidas) {
-    localStorage.setItem(
-      `fase${phaseNumber}Concluida_${levelKey}`,
-      'true'
-    );
+    let progressoSalvo = true;
+
+    try {
+      localStorage.setItem(
+        `fase${phaseNumber}Concluida_${levelKey}`,
+        'true'
+      );
+
+      const scoreKey = `recordeFase${phaseNumber}_${levelKey}`;
+      const scoreAnterior = Number(localStorage.getItem(scoreKey)) || 0;
+      const moedasAnteriores = Number(localStorage.getItem('moedasTotais')) || 0;
+
+      localStorage.setItem(scoreKey, String(Math.max(scoreAnterior, score)));
+      localStorage.setItem('moedasTotais', String(moedasAnteriores + coins));
+    } catch (error) {
+      progressoSalvo = false;
+      console.error('Não foi possível salvar o progresso do jogo.', error);
+    }
 
     $("endTitle").textContent = "TESOURO CONQUISTADO!";
     $("endText").textContent =
-      `Parabéns! Você concluiu a fase ${phaseNumber}!`;
+      `Parabéns! Você concluiu a fase ${phaseNumber} com ${score} pontos e ${coins} moedas.${progressoSalvo ? "" : " Atenção: não foi possível salvar seu progresso neste navegador."}`;
 
     const botao = $("endOverlay").querySelector("button");
 

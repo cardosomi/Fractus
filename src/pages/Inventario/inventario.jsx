@@ -1,6 +1,8 @@
 import Header from '../../components/header/header';
 
 function Inventario() {
+  const moedas = Number(localStorage.getItem('moedasTotais')) || 0;
+
   return (
     <>
       <Header />
@@ -9,7 +11,7 @@ function Inventario() {
         <div className="inventario-card">
           <span className="inventario-icone" aria-hidden="true">🎒</span>
           <h1>Inventário</h1>
-          <p>Seus itens e recursos aparecerão aqui.</p>
+          <p>Moedas conquistadas: {moedas}</p>
         </div>
       </main>
     </>

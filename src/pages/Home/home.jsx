@@ -4,17 +4,29 @@ import { useNavigate } from 'react-router-dom';
 function Home() {
   const navigate = useNavigate();
   const nome = localStorage.getItem('nomeJogador') || '';
-  const fase1Concluida = localStorage.getItem('fase1Concluida') === 'true';
-  const nivel = localStorage.getItem('nivelAluno');
-  const fasesConcluidas = fase1Concluida ? 1 : 0;
+  const nivelAluno = localStorage.getItem('nivelAluno');
+  const nivel = {
+    Iniciante: 'Facil',
+    'Intermediário': 'Intermediario',
+    'Avançado': 'Avancado'
+  }[nivelAluno];
+  const fasesConcluidas = nivel
+    ? Array.from({ length: 6 }, (_, index) => index + 1).filter(
+        (fase) =>
+          localStorage.getItem(`fase${fase}Concluida_${nivel}`) === 'true'
+      ).length
+    : 0;
+  const fase1Concluida = fasesConcluidas > 0;
   const progresso = (fasesConcluidas / 6) * 100;
-  const faseAtual = fase1Concluida ? 'Comparação' : 'Frações Básicas';
-  const destino = !nivel ? '/nivelamento' : !fase1Concluida ? '/desafio' : '/fases';
+  const faseAtual = fasesConcluidas === 6
+    ? 'Jornada concluída'
+    : `Fase ${fasesConcluidas + 1}`;
+  const destino = !nivel ? '/nivelamento' : '/fases';
   const textoBotao = !nivel
     ? 'Iniciar jornada'
-    : !fase1Concluida
-      ? 'Continuar fase 1'
-      : 'Continuar jornada';
+    : fasesConcluidas === 6
+      ? 'Rever fases'
+      : `Continuar fase ${fasesConcluidas + 1}`;
 
   return (
     <>
@@ -56,7 +68,9 @@ function Home() {
               <span style={{ width: `${progresso}%` }} />
             </div>
             <p className="progresso-legenda">
-              {fase1Concluida ? 'Você já concluiu a primeira fase.' : 'Faça o nivelamento para começar.'}
+              {fasesConcluidas
+                ? `Você já concluiu ${fasesConcluidas} de 6 fases.`
+                : 'Faça o nivelamento para começar.'}
             </p>
           </article>
 
