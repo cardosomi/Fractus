@@ -1,7 +1,5 @@
-// FRACTUS — jogo de plataforma 2D em Canvas, sem bibliotecas externas.
-// CONTROLES: setas ou A/D para mover; Espaço, W ou seta para cima para pular.
-// ESPAÇO DAS SPRITES: veja os comentários no final deste arquivo.
-
+// Controles: setas ou A/D para andar, Espaço/W/↑ para pular e X/J para atacar.
+// As imagens do personagem, das múmias e da espada ficam na pasta assets/sprites.
 async function initializeGame() {
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -233,13 +231,13 @@ function roundedRect(x, y, width, height, radius, color) {
 }
 
 function drawBackground() {
+  // A câmera acompanha o jogador; por isso, o cenário parece se mover com ele.
   const gradient = ctx.createLinearGradient(0, 0, 0, H);
   gradient.addColorStop(0, "#73d8f5");
   gradient.addColorStop(1, "#c8f4e5");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, W, H);
 
-  // Sol e nuvens em parallax
   ctx.fillStyle = "#ffe16b";
   ctx.beginPath();
   ctx.arc(800 - cameraX * 0.08, 85, 39, 0, Math.PI * 2);
@@ -252,7 +250,6 @@ function drawBackground() {
     drawCloud(cloudX, cloudY);
   }
 
-  // Montanhas distantes
   ctx.fillStyle = "#8dd8b4";
   for (let index = 0; index < 7; index++) {
     const mountainX = index * 190 - cameraX * 0.25;
@@ -263,7 +260,6 @@ function drawBackground() {
     ctx.fill();
   }
 
-  // Pirâmides
   for (let index = 0; index < 4; index++) {
     const pyramidX = index * 410 + 100 - cameraX * 0.45;
     ctx.fillStyle = "#d9ad67";
@@ -281,7 +277,6 @@ function drawBackground() {
     ctx.fill();
   }
 
-  // Dunas
   ctx.fillStyle = "#f7d58b";
   ctx.beginPath();
   ctx.moveTo(0, 430);
@@ -344,7 +339,6 @@ function drawPlayer(){
   const x = player.x-cameraX, y = player.y;
   if(player.invincible>0 && Math.floor(player.invincible/5)%2===0)return;
 
-  // Usa a sprite sheet do aventureiro e mantém o boneco de reserva como fallback.
   if (spriteLoaded) {
     const dw = SPRITE_CONFIG.drawWidth, dh = SPRITE_CONFIG.drawHeight;
     const dx = x + player.w/2 - dw/2;
@@ -371,6 +365,7 @@ function drawPlayer(){
     return;
   }
 
+  // Se a imagem do personagem não carregar, desenhamos uma versão simples no canvas.
   ctx.save();
   ctx.translate(x + player.w / 2, y + player.h / 2);
   ctx.scale(player.facing, 1);

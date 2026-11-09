@@ -17,11 +17,11 @@ function Recompensas() {
   const fasesConcluidas = (profile?.rewards || []).map((reward) => {
     const limites = configuracaoJogo[nivel]?.[reward.phase]?.pergaminhos || [];
     const medalha = reward.best_score >= (limites[2] || Infinity)
-      ? '🥇 Ouro'
+      ? ' Ouro'
       : reward.best_score >= (limites[1] || Infinity)
-        ? '🥈 Prata'
+        ? 'Prata'
         : reward.best_score >= (limites[0] || Infinity)
-          ? '🥉 Bronze'
+          ? 'Bronze'
           : null;
 
     return {
