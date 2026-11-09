@@ -11,7 +11,8 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Nivelamento />} />
+        <Route path="/inicio" element={<Home />} />
         <Route path="/nivelamento" element={<Nivelamento />} />
         <Route path="/fases" element={<Fases />} />
         <Route path="/desafio" element={<Desafio />} />

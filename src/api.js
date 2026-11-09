@@ -1,14 +1,26 @@
 let profileRequest;
 
 async function requestApi(path, options = {}) {
-  const response = await fetch(path, {
-    credentials: 'same-origin',
-    ...options,
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers,
-    },
-  });
+  let response;
+  try {
+    response = await fetch(path, {
+      credentials: 'same-origin',
+      ...options,
+      headers: {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        ...options.headers,
+      },
+    });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(
+        'Não foi possível conectar à API. Inicie o servidor Flask e tente novamente.',
+        { cause: error }
+      );
+    }
+    throw error;
+  }
+
   const result = await response.json();
 
   if (!response.ok) {

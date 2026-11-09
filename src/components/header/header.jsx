@@ -7,7 +7,7 @@ function Header() {
       <h1>FR∆CTUS</h1>
 
       <nav>
-        <Link to="/">Home</Link>
+        <Link to="/inicio">Home</Link>
         <Link to="/fases">Fases</Link>
         <Link to="/recompensas">Recompensas</Link>
       </nav>
