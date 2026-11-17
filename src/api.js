@@ -1,12 +1,34 @@
 let profileRequest;
+const TOKEN_KEY = 'fractus_access_token';
+export const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+
+export function getAccessToken() {
+  return sessionStorage.getItem(TOKEN_KEY);
+}
+
+function saveAccessToken(token) {
+  sessionStorage.setItem(TOKEN_KEY, token);
+}
+
+export function clearAccessToken() {
+  sessionStorage.removeItem(TOKEN_KEY);
+}
+
+export function logout() {
+  clearAccessToken();
+  window.dispatchEvent(new CustomEvent('fractus:session-ended', {
+    detail: 'Você saiu da sua conta.',
+  }));
+}
 
 async function requestApi(path, options = {}) {
   let response;
   try {
-    response = await fetch(path, {
-      credentials: 'same-origin',
+    const token = getAccessToken();
+    response = await fetch(`${API_BASE_URL}${path}`, {
       ...options,
       headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(options.body ? { 'Content-Type': 'application/json' } : {}),
         ...options.headers,
       },
@@ -24,10 +46,34 @@ async function requestApi(path, options = {}) {
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.error || `Erro na API (${response.status}).`);
+    const error = new Error(result.error || `Erro na API (${response.status}).`);
+    error.status = response.status;
+    if (response.status === 401 && !path.startsWith('/api/auth/')) {
+      clearAccessToken();
+      window.dispatchEvent(new CustomEvent('fractus:session-ended', {
+        detail: result.error || 'Sua sessão expirou. Entre novamente.',
+      }));
+    }
+    throw error;
   }
 
   return result;
+}
+
+async function authenticate(path, credentials) {
+  const result = await requestApi(path, {
+    method: 'POST',
+    body: JSON.stringify(credentials),
+  });
+  saveAccessToken(result.accessToken);
+}
+
+export function register(email, password) {
+  return authenticate('/api/auth/register', { email, password });
+}
+
+export function login(email, password) {
+  return authenticate('/api/auth/login', { email, password });
 }
 
 export function getProfile() {

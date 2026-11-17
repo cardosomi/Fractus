@@ -7,6 +7,9 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from flask import Flask, abort, g, jsonify, request, send_from_directory, session
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 ROOT = Path(__file__).resolve().parent
@@ -32,13 +35,35 @@ def load_secret_key():
 
 
 app = Flask(__name__)
+secret_key = load_secret_key()
 app.config.update(
-    SECRET_KEY=load_secret_key(),
+    SECRET_KEY=secret_key,
+    JWT_SECRET_KEY=os.environ.get("JWT_SECRET_KEY") or secret_key,
+    JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=8),
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_PERMANENT=True,
     PERMANENT_SESSION_LIFETIME=timedelta(days=365),
 )
+jwt = JWTManager(app)
+
+frontend_origin = os.environ.get("FRONTEND_ORIGIN")
+if frontend_origin:
+    CORS(app, resources={r"/api/*": {"origins": [frontend_origin]}})
+
+
+@jwt.unauthorized_loader
+def missing_jwt(_reason):
+    return jsonify({"error": "Autenticação obrigatória."}), 401
+
+
+@jwt.invalid_token_loader
+def invalid_jwt(_reason):
+    return jsonify({"error": "Token inválido. Entre novamente."}), 401
+
+
+@jwt.expired_token_loader
+def expired_jwt(_jwt_header, _jwt_payload):
+    return jsonify({"error": "Sua sessão expirou. Entre novamente."}), 401
 
 
 def connect_database():
@@ -60,6 +85,12 @@ def initialize_database():
                 level TEXT,
                 coins INTEGER NOT NULL DEFAULT 0,
                 game_data TEXT NOT NULL DEFAULT '[]'
+            );
+            CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,
+                email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+                password_hash TEXT NOT NULL,
+                profile_id TEXT NOT NULL UNIQUE REFERENCES profiles(id) ON DELETE CASCADE
             );
             CREATE TABLE IF NOT EXISTS phase_progress (
                 profile_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -96,18 +127,8 @@ def close_database(_error=None):
             connection.close()
 
 
-def profile_id():
-    identifier = session.get("profile_id")
-    if identifier is None:
-        identifier = uuid.uuid4().hex
-        session["profile_id"] = identifier
-        session.permanent = True
-        database().execute("INSERT INTO profiles (id) VALUES (?)", (identifier,))
-    return identifier
-
-
 def load_profile():
-    identifier = profile_id()
+    identifier = get_jwt_identity()
     profile = database().execute(
         "SELECT id, name, level, coins, game_data FROM profiles WHERE id = ?",
         (identifier,),
@@ -146,12 +167,84 @@ def valid_integer(value, minimum=0):
     return isinstance(value, int) and not isinstance(value, bool) and value >= minimum
 
 
+@app.post("/api/auth/register")
+def register():
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        abort(400, description="Envie um objeto JSON.")
+
+    email = body.get("email")
+    password = body.get("password")
+    if not isinstance(email, str) or not isinstance(password, str):
+        abort(400, description="E-mail e senha são obrigatórios.")
+
+    email = email.strip().lower()
+    if not email or len(email) > 254 or "@" not in email:
+        abort(400, description="Informe um e-mail válido.")
+    if len(password) < 8 or len(password) > 128:
+        abort(400, description="A senha deve ter entre 8 e 128 caracteres.")
+
+    user_id = uuid.uuid4().hex
+    connection = database()
+    profile_identifier = session.get("profile_id")
+    if profile_identifier:
+        existing_profile = connection.execute(
+            """
+            SELECT profiles.id
+            FROM profiles
+            LEFT JOIN users ON users.profile_id = profiles.id
+            WHERE profiles.id = ? AND users.id IS NULL
+            """,
+            (profile_identifier,),
+        ).fetchone()
+        if existing_profile is None:
+            profile_identifier = None
+
+    if profile_identifier is None:
+        profile_identifier = uuid.uuid4().hex
+        connection.execute("INSERT INTO profiles (id) VALUES (?)", (profile_identifier,))
+
+    try:
+        connection.execute(
+            "INSERT INTO users (id, email, password_hash, profile_id) VALUES (?, ?, ?, ?)",
+            (user_id, email, generate_password_hash(password), profile_identifier),
+        )
+    except sqlite3.IntegrityError:
+        abort(409, description="Já existe uma conta com este e-mail.")
+
+    access_token = create_access_token(identity=profile_identifier)
+    return jsonify({"accessToken": access_token}), 201
+
+
+@app.post("/api/auth/login")
+def login():
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        abort(400, description="Envie um objeto JSON.")
+
+    email = body.get("email")
+    password = body.get("password")
+    if not isinstance(email, str) or not isinstance(password, str):
+        abort(400, description="E-mail e senha são obrigatórios.")
+
+    user = database().execute(
+        "SELECT profile_id, password_hash FROM users WHERE email = ?",
+        (email.strip().lower(),),
+    ).fetchone()
+    if user is None or not check_password_hash(user["password_hash"], password):
+        abort(401, description="E-mail ou senha incorretos.")
+
+    return jsonify({"accessToken": create_access_token(identity=user["profile_id"])})
+
+
 @app.get("/api/profile")
+@jwt_required()
 def get_profile():
     return jsonify(profile_response(load_profile()))
 
 
 @app.patch("/api/profile")
+@jwt_required()
 def update_profile():
     body = request.get_json(silent=True)
     if not isinstance(body, dict):
@@ -170,6 +263,7 @@ def update_profile():
 
 
 @app.put("/api/game-data")
+@jwt_required()
 def save_game_data():
     body = request.get_json(silent=True)
     if not isinstance(body, dict):
@@ -192,6 +286,7 @@ def save_game_data():
 
 
 @app.get("/api/game-data")
+@jwt_required()
 def get_game_data():
     profile = load_profile()
     if not profile["level"]:
@@ -209,6 +304,7 @@ def get_game_data():
 
 
 @app.post("/api/complete-phase")
+@jwt_required()
 def complete_phase():
     body = request.get_json(silent=True)
     if not isinstance(body, dict):

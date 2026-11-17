@@ -1,0 +1,95 @@
+.page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.card {
+  display: flex;
+  width: min(440px, 100%);
+  flex-direction: column;
+  gap: 12px;
+  padding: 36px;
+  border: 3px solid var(--panel-border);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: 0 9px 0 #10122b;
+}
+
+.kicker {
+  color: var(--gold);
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.8rem;
+}
+
+.card h1 {
+  color: var(--cream);
+}
+
+.description {
+  margin-bottom: 8px;
+  color: #c8c7f0;
+  line-height: 1.5;
+}
+
+.card label {
+  color: var(--cream);
+  font-weight: 600;
+}
+
+.card input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 2px solid #414374;
+  border-radius: 9px;
+  background: #171936;
+  color: white;
+}
+
+.card input:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.submit {
+  margin-top: 8px;
+  padding: 12px;
+  border: 0;
+  border-radius: 9px;
+  background: #ffbf3f;
+  box-shadow: 0 4px 0 #d78b24;
+  color: #4a2e77;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.error {
+  color: #ffb5b5;
+}
+
+.switch {
+  color: #c8c7f0;
+  text-align: center;
+}
+
+.switch button {
+  margin-left: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 28px 22px;
+  }
+}

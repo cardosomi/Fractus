@@ -53,7 +53,7 @@ function Home() {
           </div>
 
           <div className="mascote" aria-label="Faraó do Fractus">
-            <img src="/../../../public/fotoHome/delta.png" alt="delta simbolo do FRACTUS" />
+            <img src={`${import.meta.env.BASE_URL}fotoHome/delta.png`} alt="delta simbolo do FRACTUS" />
             <span className="mascote-simbolo">1/2</span>
           </div>
         </section>

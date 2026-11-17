@@ -33,6 +33,16 @@ body {
   min-height: 100vh;
 }
 
+.auth-loading {
+  display: grid;
+  min-height: 100vh;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
 button,
 input {
   font: inherit;

@@ -9,7 +9,11 @@ import Inventario from '../pages/Inventario/inventario';
 
 function AppRoutes() {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      basename={import.meta.env.BASE_URL === '/'
+        ? undefined
+        : import.meta.env.BASE_URL.replace(/\/$/, '')}
+    >
       <Routes>
         <Route path="/" element={<Nivelamento />} />
         <Route path="/inicio" element={<Home />} />

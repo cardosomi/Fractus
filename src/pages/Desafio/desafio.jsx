@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import styles from './desafio.module.css';
-import { getGameData } from '../../api';
+import { API_BASE_URL, getGameData } from '../../api';
 
 function Desafio() {
   const [parametros] = useSearchParams();
@@ -37,7 +37,7 @@ function Desafio() {
             key={`${gameData.level}-${fase}`}
             className={styles.jogoFrame}
             title={`Fractus - Fase ${fase}`}
-            src={`/jogo/index.html?fase=${fase}`}
+            src={`${import.meta.env.BASE_URL}jogo/index.html?fase=${fase}&api=${encodeURIComponent(API_BASE_URL)}`}
             allow="fullscreen"
           />
       )}

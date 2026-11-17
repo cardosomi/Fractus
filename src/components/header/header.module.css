@@ -41,11 +41,25 @@
 }
 
 .header nav a:hover,
-.header nav a:focus-visible {
+.header nav a:focus-visible,
+.header nav button:hover,
+.header nav button:focus-visible {
   border-color: #6868a2;
   background: #171936;
   color: #ffd65a;
   outline: none;
+}
+
+.header nav button {
+  padding: 9px 12px;
+  border: 2px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: #d7d4ff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
 }
 
 .status {
@@ -66,6 +80,11 @@
   }
 
   .header nav a {
+    padding: 7px 9px;
+    font-size: 0.86rem;
+  }
+
+  .header nav button {
     padding: 7px 9px;
     font-size: 0.86rem;
   }

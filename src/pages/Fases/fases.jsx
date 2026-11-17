@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import CardFase from '../../components/cards/cardFase';
 import Header from '../../components/header/header';
 import { getProfile } from '../../api';
@@ -41,7 +42,7 @@ function Fases() {
         {profile && !profile.level && (
           <p>
             Faça o nivelamento antes de começar.{' '}
-            <a href="/nivelamento">Ir para o nivelamento</a>
+            <Link to="/nivelamento">Ir para o nivelamento</Link>
           </p>
         )}
         <div className="mapa-trilha">

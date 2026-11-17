@@ -14,7 +14,17 @@ const phaseNumber = Math.max(
   Math.min(6, Number(query.get('fase')) || 1)
 );
 
-const gameDataResponse = await fetch('/api/game-data');
+const apiBaseUrl = (query.get('api') || '').replace(/\/+$/, '');
+const accessToken = sessionStorage.getItem('fractus_access_token');
+const apiFetch = (path, options = {}) => fetch(`${apiBaseUrl}${path}`, {
+  ...options,
+  headers: {
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    ...options.headers
+  }
+});
+
+const gameDataResponse = await apiFetch('/api/game-data');
 const gameData = await gameDataResponse.json();
 if (!gameDataResponse.ok) {
   throw new Error(gameData.error || 'Não foi possível carregar os dados do jogo.');
@@ -719,7 +729,7 @@ async function finishGame() {
     const botao = $("endOverlay").querySelector("button");
     const salvarProgresso = async () => {
       try {
-        const response = await fetch('/api/complete-phase', {
+        const response = await apiFetch('/api/complete-phase', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phase: phaseNumber, score, coins })
