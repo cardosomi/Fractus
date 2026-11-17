@@ -43,18 +43,37 @@ async function requestApi(path, options = {}) {
     throw error;
   }
 
-  const result = await response.json();
+  const responseBody = await response.text();
+  let result = null;
+  if (responseBody) {
+    try {
+      result = JSON.parse(responseBody);
+    } catch {
+      result = null;
+    }
+  }
 
   if (!response.ok) {
-    const error = new Error(result.error || `Erro na API (${response.status}).`);
+    const error = new Error(
+      result?.error
+      || `A API retornou uma resposta ${responseBody ? 'inválida' : 'vazia'} `
+        + `(HTTP ${response.status}). Verifique se o Flask está ativo e se VITE_API_URL aponta para a API.`
+    );
     error.status = response.status;
     if (response.status === 401 && !path.startsWith('/api/auth/')) {
       clearAccessToken();
       window.dispatchEvent(new CustomEvent('fractus:session-ended', {
-        detail: result.error || 'Sua sessão expirou. Entre novamente.',
+        detail: result?.error || 'Sua sessão expirou. Entre novamente.',
       }));
     }
     throw error;
+  }
+
+  if (!result || typeof result !== 'object' || Array.isArray(result)) {
+    throw new Error(
+      `A API retornou uma resposta ${responseBody ? 'inválida' : 'vazia'}. `
+      + 'Verifique se o Flask está ativo e se VITE_API_URL aponta para a API.'
+    );
   }
 
   return result;
